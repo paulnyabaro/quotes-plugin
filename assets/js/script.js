@@ -1,29 +1,49 @@
-jQuery(document).ready(function($) {
-    $('.m2m-like, .m2m-dislike').on('click', function() {
-        var post_id = $(this).data('id');
-        var type = $(this).hasClass('m2m-like') ? 'like' : 'dislike';
-
+jQuery(document).ready(function ($) {
+    // Like button click event
+    $('.m2m-like').on('click', function () {
+        var quoteId = $(this).data('id');
+        
         $.ajax({
+            type: 'POST',
             url: m2m_ajax.url,
-            type: 'post',
             data: {
-                action: 'm2m_like_dislike',
-                post_id: post_id,
-                type: type,
-                security: m2m_ajax.nonce
+                action: 'm2m_handle_like_dislike',
+                type: 'like',
+                quote_id: quoteId,
+                nonce: m2m_ajax.nonce
             },
-            success: function(response) {
-                if (type === 'like') {
-                    $('.m2m-like[data-id="' + post_id + '"]').text('Like (' + response.data.likes + ')');
+            success: function (response) {
+                if (response.success) {
+                    alert('Liked successfully');
+                    location.reload(); // Reload the page to show updated counts
                 } else {
-                    $('.m2m-dislike[data-id="' + post_id + '"]').text('Dislike (' + response.data.dislikes + ')');
+                    alert('Error: ' + response.data.message);
                 }
             }
         });
     });
 
-    $('.m2m-share-btn').on('click', function() {
-        var url = window.location.href;
-        alert('Share this quote: ' + url);
+    // Dislike button click event
+    $('.m2m-dislike').on('click', function () {
+        var quoteId = $(this).data('id');
+        
+        $.ajax({
+            type: 'POST',
+            url: m2m_ajax.url,
+            data: {
+                action: 'm2m_handle_like_dislike',
+                type: 'dislike',
+                quote_id: quoteId,
+                nonce: m2m_ajax.nonce
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert('Disliked successfully');
+                    location.reload(); // Reload the page to show updated counts
+                } else {
+                    alert('Error: ' + response.data.message);
+                }
+            }
+        });
     });
 });

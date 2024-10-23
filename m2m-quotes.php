@@ -165,9 +165,69 @@ function m2m_quotes_settings_page() {
 }
 
 function m2m_general_settings_page() {
-    echo '<p>General settings for m2m Quotes will be displayed here.</p>';
+    $quotes = get_posts(array(
+        'post_type' => 'm2m_quote',
+        'numberposts' => -1
+    ));
+
+    if ($quotes) {
+        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<thead><tr><th>Quote</th><th>Author</th><th>Likes</th><th>Dislikes</th></tr></thead>';
+        echo '<tbody>';
+        
+        foreach ($quotes as $quote) {
+            $likes = get_post_meta($quote->ID, 'm2m_likes', true) ?: 0;
+            $dislikes = get_post_meta($quote->ID, 'm2m_dislikes', true) ?: 0;
+            $author = get_post_meta($quote->ID, 'm2m_quote_author', true);
+
+            echo '<tr>';
+            echo '<td>' . esc_html($quote->post_content) . '</td>';
+            echo '<td>' . esc_html($author) . '</td>';
+            echo '<td>' . esc_html($likes) . '</td>';
+            echo '<td>' . esc_html($dislikes) . '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody>';
+        echo '</table>';
+    } else {
+        echo '<p>No quotes found.</p>';
+    }
 }
 
 function m2m_button_settings_page() {
     echo '<p>Button settings for m2m Quotes will be displayed here.</p>';
 }
+
+
+function m2m_handle_like_dislike() {
+    // Check nonce for security
+    check_ajax_referer('m2m_nonce', 'nonce');
+
+    if (!isset($_POST['quote_id']) || !isset($_POST['type'])) {
+        wp_send_json_error(array('message' => 'Invalid request'));
+    }
+
+    $quote_id = intval($_POST['quote_id']);
+    $type = sanitize_text_field($_POST['type']);
+
+    // Get the current like/dislike count
+    $likes = get_post_meta($quote_id, 'm2m_likes', true) ?: 0;
+    $dislikes = get_post_meta($quote_id, 'm2m_dislikes', true) ?: 0;
+
+    // Increment likes or dislikes based on the type
+    if ($type === 'like') {
+        $likes++;
+        update_post_meta($quote_id, 'm2m_likes', $likes);
+    } elseif ($type === 'dislike') {
+        $dislikes++;
+        update_post_meta($quote_id, 'm2m_dislikes', $dislikes);
+    } else {
+        wp_send_json_error(array('message' => 'Invalid action'));
+    }
+
+    wp_send_json_success();
+}
+
+add_action('wp_ajax_m2m_handle_like_dislike', 'm2m_handle_like_dislike');
+add_action('wp_ajax_nopriv_m2m_handle_like_dislike', 'm2m_handle_like_dislike');
