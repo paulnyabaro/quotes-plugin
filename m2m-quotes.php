@@ -80,6 +80,12 @@ function m2m_display_current_quote($atts) {
         echo '<a href="' . esc_url($button4) . '" class="m2m-btn"><img src="' . plugin_dir_url(__FILE__) . 'assets/img/share.png" />Share</a>';
         echo '</div>';
         echo '</div>';
+
+        // Display like and dislike buttons
+        echo '<div class="m2m-like-dislike">';
+        echo '<button class="m2m-like" data-id="' . $quote_id . '"><i class="dashicons dashicons-thumbs-up"></i> Like (' . $likes . ')</button>';
+        echo '<button class="m2m-dislike" data-id="' . $quote_id . '"><i class="dashicons dashicons-thumbs-down"></i> Dislike (' . $dislikes . ')</button>';
+        echo '</div>';
     }
 
     return ob_get_clean();
