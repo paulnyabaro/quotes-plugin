@@ -1,0 +1,20 @@
+.m2m-quote {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+.m2m-like, .m2m-dislike {
+    cursor: pointer;
+    background-color: #e9e9e9;
+    padding: 10px 15px;
+    margin-right: 10px;
+}
+
+.m2m-share-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    cursor: pointer;
+}
